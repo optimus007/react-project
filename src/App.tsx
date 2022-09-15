@@ -1,11 +1,23 @@
 import "./App.css"
 import { Canvas, useFrame, ThreeElements } from "@react-three/fiber"
 import { useRef, useState } from "react"
-import { Environment, OrbitControls } from "@react-three/drei"
-import { Pane } from "tweakpane"
+import {
+  Environment,
+  OrbitControls,
+  PerformanceMonitor,
+  Backdrop,
+} from "@react-three/drei"
+import { useControls } from "leva"
 import { name, version } from "../package.json"
+import round from "lodash/round"
 
-const pane = new Pane({ title: String(version) })
+function MyComponent() {
+  const folder = useControls(String(version).replaceAll(".", "_"), {
+    showLighting: true,
+    showStats: false,
+  })
+  console.log("leva", { folder })
+}
 
 function Box(props: ThreeElements["mesh"]) {
   const mesh = useRef<THREE.Mesh>(null!)
@@ -24,7 +36,7 @@ function Box(props: ThreeElements["mesh"]) {
       <boxGeometry args={[1, 2, 1]} />
       <meshStandardMaterial
         color={hovered ? "hotpink" : "orange"}
-        metalness={1}
+        metalness={hovered ? 0 : 1}
         roughness={0}
       />
     </mesh>
@@ -32,8 +44,23 @@ function Box(props: ThreeElements["mesh"]) {
 }
 
 function ThreeScene() {
+  const [dpr, setDpr] = useState(1)
   return (
-    <Canvas>
+    <Canvas dpr={dpr} style={{ background: "hotpink" }}>
+      <PerformanceMonitor
+        // onIncline={() => {
+        //   setDpr(2)
+        //   console.log("Incline")
+        // }}
+        // onDecline={() => {
+        //   setDpr(1)
+        //   console.log("Decline")
+        // }}
+        onChange={({ factor }) => {
+          setDpr(round(0.5 + 1.5 * factor, 1))
+          console.log({ factor, dpr })
+        }}
+      />
       <OrbitControls />
       <ambientLight intensity={0.1} />
       <directionalLight color="red" position={[0, 0, 5]} />
@@ -45,7 +72,13 @@ function ThreeScene() {
 }
 
 function App() {
-  return <ThreeScene />
+  MyComponent()
+  return (
+    <>
+      <ThreeScene />
+      {/* <MyComponent /> */}
+    </>
+  )
 }
 
 export default App
