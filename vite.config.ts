@@ -6,7 +6,9 @@ export default defineConfig({
   plugins: [react()],
   build: {
     outDir: './docs/',
-    chunkSizeWarningLimit: 1000
+    chunkSizeWarningLimit: 1000,
+    
   },
+  base: './'
 })
 
