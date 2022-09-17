@@ -1,27 +1,30 @@
 import "./App.css"
 
 import { Canvas, useFrame, ThreeElements, useLoader } from "@react-three/fiber"
-import { useRef, useState, Suspense } from "react"
+import { useRef, useState, Suspense, useEffect } from "react"
 import {
   Environment,
   OrbitControls,
   PerformanceMonitor,
+  Stats,
 } from "@react-three/drei"
 import { useControls } from "leva"
 import { version } from "../package.json"
 import round from "lodash/round"
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader"
+import { AnimationMixer } from "three"
 
-function MyComponent() {
+function GuiStuff() {
   const folder = useControls(String(version).replaceAll(".", "_"), {
     showLighting: true,
-    showStats: false,
+    // showStats: false,
   })
   console.log("leva", { folder })
 }
 
 function Box(props: ThreeElements["mesh"]) {
   const mesh = useRef<THREE.Mesh>(null!)
+
   const [hovered, setHover] = useState(false)
   const [active, setActive] = useState(false)
   useFrame((state, delta) => (mesh.current.rotation.x += 0.005))
@@ -46,9 +49,25 @@ function Box(props: ThreeElements["mesh"]) {
 
 const Model = () => {
   const gltf = useLoader(GLTFLoader, "./model.glb")
+  // Here's the animation part
+  // *************************
+  let mixer: AnimationMixer
+  if (gltf.animations.length) {
+    mixer = new AnimationMixer(gltf.scene)
+    gltf.animations.forEach((clip) => {
+      const action = mixer.clipAction(clip)
+      action.play()
+    })
+  }
+
+  useFrame((state, delta) => {
+    mixer?.update(delta)
+  })
+  // useFrame(({ clock }) => mixer && mixer.update(clock.getDelta()))
+
   return (
     <>
-      <primitive object={gltf.scene} scale={0.4} />
+      <primitive object={gltf.scene} scale={1} />
     </>
   )
 }
@@ -56,7 +75,12 @@ const Model = () => {
 function ThreeScene() {
   const [dpr, setDpr] = useState(1)
   return (
-    <Canvas dpr={dpr} style={{ background: "grey" }}>
+    <Canvas
+      dpr={dpr}
+      style={{ background: "grey" }}
+      camera={{ position: [0, 2, 5] }}
+    >
+      <Stats />
       <PerformanceMonitor
         // onIncline={() => {
         //   setDpr(2)
@@ -71,7 +95,7 @@ function ThreeScene() {
           console.log({ factor, dpr })
         }}
       />
-      <OrbitControls />
+      <OrbitControls target={[0, 1, 0]} />
 
       <directionalLight color="green" position={[0, 0, 5]} intensity={3} />
       <Box position={[-1.2, 0, 0]} />
@@ -89,7 +113,7 @@ function ThreeScene() {
 }
 
 function App() {
-  MyComponent()
+  GuiStuff()
   return (
     <>
       <ThreeScene />
