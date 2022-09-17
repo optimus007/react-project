@@ -1,15 +1,16 @@
 import "./App.css"
-import { Canvas, useFrame, ThreeElements } from "@react-three/fiber"
-import { useRef, useState } from "react"
+
+import { Canvas, useFrame, ThreeElements, useLoader } from "@react-three/fiber"
+import { useRef, useState, Suspense } from "react"
 import {
   Environment,
   OrbitControls,
   PerformanceMonitor,
-  Backdrop,
 } from "@react-three/drei"
 import { useControls } from "leva"
-import { name, version } from "../package.json"
+import { version } from "../package.json"
 import round from "lodash/round"
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader"
 
 function MyComponent() {
   const folder = useControls(String(version).replaceAll(".", "_"), {
@@ -33,7 +34,7 @@ function Box(props: ThreeElements["mesh"]) {
       onPointerOver={(event) => setHover(true)}
       onPointerOut={(event) => setHover(false)}
     >
-      <boxGeometry args={[1, 2, 1]} />
+      <boxGeometry args={[0.1, 0.2, 0.1]} />
       <meshStandardMaterial
         color={hovered ? "hotpink" : "orange"}
         metalness={hovered ? 0 : 1}
@@ -43,10 +44,19 @@ function Box(props: ThreeElements["mesh"]) {
   )
 }
 
+const Model = () => {
+  const gltf = useLoader(GLTFLoader, "/model.glb")
+  return (
+    <>
+      <primitive object={gltf.scene} scale={0.4} />
+    </>
+  )
+}
+
 function ThreeScene() {
   const [dpr, setDpr] = useState(1)
   return (
-    <Canvas dpr={dpr} style={{ background: "hotpink" }}>
+    <Canvas dpr={dpr} style={{ background: "grey" }}>
       <PerformanceMonitor
         // onIncline={() => {
         //   setDpr(2)
@@ -62,11 +72,18 @@ function ThreeScene() {
         }}
       />
       <OrbitControls />
-      <ambientLight intensity={0.1} />
-      <directionalLight color="red" position={[0, 0, 5]} />
+
+      <directionalLight color="green" position={[0, 0, 5]} intensity={3} />
       <Box position={[-1.2, 0, 0]} />
       <Box position={[1.2, 0, 0]} />
-      <Environment files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/peppermint_powerplant_2_1k.hdr" />
+      <gridHelper />
+      <Suspense>
+        <Model />
+        <Environment
+          files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/peppermint_powerplant_2_1k.hdr"
+          background
+        />
+      </Suspense>
     </Canvas>
   )
 }
@@ -76,7 +93,6 @@ function App() {
   return (
     <>
       <ThreeScene />
-      {/* <MyComponent /> */}
     </>
   )
 }
