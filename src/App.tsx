@@ -45,7 +45,7 @@ function Box(props: ThreeElements["mesh"]) {
 }
 
 const Model = () => {
-  const gltf = useLoader(GLTFLoader, "/model.glb")
+  const gltf = useLoader(GLTFLoader, "./model.glb")
   return (
     <>
       <primitive object={gltf.scene} scale={0.4} />
