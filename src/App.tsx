@@ -1,33 +1,23 @@
-import "./App.css"
-
-import { Canvas, useFrame, ThreeElements, useLoader } from "@react-three/fiber"
-import { useRef, useState, Suspense, useEffect } from "react"
-import {
-  Environment,
-  OrbitControls,
-  PerformanceMonitor,
-  Stats,
-} from "@react-three/drei"
-import { useControls } from "leva"
-import { version } from "../package.json"
-import round from "lodash/round"
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader"
-import { AnimationMixer } from "three"
+import "./App.css";
+import { Canvas, useFrame, ThreeElements, useLoader } from "@react-three/fiber";
+import { useRef, useState, Suspense, useEffect } from "react";
+import { Environment, OrbitControls, PerformanceMonitor, Stats, useGLTF, useAnimations, ContactShadows } from "@react-three/drei";
+import { useControls } from "leva";
+import { version } from "../package.json";
+import round from "lodash/round";
 
 function GuiStuff() {
-  const folder = useControls(String(version).replaceAll(".", "_"), {
-    showLighting: true,
-    // showStats: false,
-  })
-  console.log("leva", { folder })
+  const ver = useControls({
+    version: String(version),
+  });
 }
 
 function Box(props: ThreeElements["mesh"]) {
-  const mesh = useRef<THREE.Mesh>(null!)
+  const mesh = useRef<THREE.Mesh>(null!);
 
-  const [hovered, setHover] = useState(false)
-  const [active, setActive] = useState(false)
-  useFrame((state, delta) => (mesh.current.rotation.x += 0.005))
+  const [hovered, setHover] = useState(false);
+  const [active, setActive] = useState(false);
+  useFrame((state, delta) => (mesh.current.rotation.x += 0.005));
   return (
     <mesh
       {...props}
@@ -38,48 +28,42 @@ function Box(props: ThreeElements["mesh"]) {
       onPointerOut={(event) => setHover(false)}
     >
       <boxGeometry args={[0.1, 0.2, 0.1]} />
-      <meshStandardMaterial
-        color={hovered ? "hotpink" : "orange"}
-        metalness={hovered ? 0 : 1}
-        roughness={0}
-      />
+      <meshStandardMaterial color={hovered ? "hotpink" : "orange"} metalness={hovered ? 0 : 1} roughness={0} />
     </mesh>
-  )
+  );
 }
 
 const Model = () => {
-  const gltf = useLoader(GLTFLoader, "./model.glb")
-  // Here's the animation part
-  // *************************
-  let mixer: AnimationMixer
-  if (gltf.animations.length) {
-    mixer = new AnimationMixer(gltf.scene)
-    gltf.animations.forEach((clip) => {
-      const action = mixer.clipAction(clip)
-      action.play()
-    })
-  }
+  const gltf = useGLTF("./model.glb");
+  const { actions, names, mixer } = useAnimations(gltf.animations, gltf.scene);
 
-  useFrame((state, delta) => {
-    mixer?.update(delta)
-  })
-  // useFrame(({ clock }) => mixer && mixer.update(clock.getDelta()))
+  useEffect(() => {
+    actions[names[0]]?.play();
+  });
 
   return (
     <>
       <primitive object={gltf.scene} scale={1} />
     </>
-  )
-}
+  );
+};
 
 function ThreeScene() {
-  const [dpr, setDpr] = useState(1)
+  const [dpr, setDpr] = useState(1);
+
+  const conShadow = useControls("shadow", {
+    opacity: 0.5,
+    blur: 0.5,
+  });
+
+  const groundProj = useControls("Ground", {
+    height: 5,
+    radius: 40,
+    scale: 20,
+  });
+
   return (
-    <Canvas
-      dpr={dpr}
-      style={{ background: "grey" }}
-      camera={{ position: [0, 2, 5] }}
-    >
+    <Canvas dpr={dpr} style={{ background: "grey" }} camera={{ position: [0, 2, 5] }}>
       <Stats />
       <PerformanceMonitor
         // onIncline={() => {
@@ -91,8 +75,8 @@ function ThreeScene() {
         //   console.log("Decline")
         // }}
         onChange={({ factor }) => {
-          setDpr(round(0.5 + 1.5 * factor, 1))
-          console.log({ factor, dpr })
+          setDpr(round(0.5 + 1.5 * factor, 1));
+          console.log({ factor, dpr });
         }}
       />
       <OrbitControls target={[0, 1, 0]} />
@@ -100,25 +84,38 @@ function ThreeScene() {
       <directionalLight color="green" position={[0, 0, 5]} intensity={3} />
       <Box position={[-1.2, 0, 0]} />
       <Box position={[1.2, 0, 0]} />
-      <gridHelper />
+
       <Suspense>
-        <Model />
         <Environment
-          files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/peppermint_powerplant_2_1k.hdr"
-          background
+          files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/garden_nook_1k.hdr"
+          ground={{
+            height: groundProj.height,
+            radius: groundProj.radius,
+            scale: groundProj.scale,
+          }}
+        />
+        <Model />
+        <ContactShadows
+          rotation={[Math.PI / 2, 0, 0]}
+          position={[0, 0, 0]}
+          opacity={conShadow.opacity}
+          scale={5}
+          blur={conShadow.blur}
+          far={10}
+          resolution={256}
         />
       </Suspense>
     </Canvas>
-  )
+  );
 }
 
 function App() {
-  GuiStuff()
+  GuiStuff();
   return (
     <>
       <ThreeScene />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
