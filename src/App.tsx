@@ -38,8 +38,9 @@ const Model = () => {
   const { actions, names, mixer } = useAnimations(gltf.animations, gltf.scene);
 
   useEffect(() => {
+    console.log("play");
     actions[names[0]]?.play();
-  });
+  }, []);
 
   return (
     <>
