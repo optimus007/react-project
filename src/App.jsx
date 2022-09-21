@@ -1,5 +1,5 @@
 import "./App.css";
-import { Canvas, useFrame, ThreeElements, useLoader } from "@react-three/fiber";
+import { Canvas, useFrame,  } from "@react-three/fiber";
 import { useRef, useState, Suspense, useEffect } from "react";
 import { Environment, OrbitControls, PerformanceMonitor, Stats, useGLTF, useAnimations, ContactShadows, Instances, Instance } from "@react-three/drei";
 import { useControls } from "leva";
