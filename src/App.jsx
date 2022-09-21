@@ -1,9 +1,10 @@
+import "./App.css";
 import React from "react";
 import { Canvas } from "@react-three/fiber";
-import "./App.css";
 import { OrbitControls } from "@react-three/drei";
 
 function App() {
+  console.log("App called");
   return (
     <Canvas>
       <OrbitControls />
