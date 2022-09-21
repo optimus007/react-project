@@ -15,8 +15,8 @@ const params = {
   range: 0,
 };
 
-function Box(props: ThreeElements["mesh"]) {
-  const mesh = useRef<THREE.Mesh>(null!);
+function Box(props) {
+  const mesh = useRef();
 
   const [hovered, setHover] = useState(false);
   const [active, setActive] = useState(false);
@@ -53,7 +53,7 @@ const Model = () => {
 };
 
 const color = new Color();
-const randomVector = (r: number) => [r / 2 - Math.random() * r, r / 2 - Math.random() * r + r / 2, r / 2 - Math.random() * r];
+const randomVector = (r) => [r / 2 - Math.random() * r, r / 2 - Math.random() * r + r / 2, r / 2 - Math.random() * r];
 const randomEuler = () => [Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI];
 const randomData = Array.from({ length: 1000 }, (r = 5) => ({ random: Math.random(), position: randomVector(r), rotation: randomEuler() }));
 
@@ -71,7 +71,7 @@ const Shoes = ({ range }) => {
 };
 
 function Shoe({ random, ...props }) {
-  const ref = useRef<Instance>();
+  const ref = useRef();
   const [hovered, setHover] = useState(false);
 
   useFrame((state) => {
