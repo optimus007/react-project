@@ -122,7 +122,7 @@ function ThreeScene() {
   return (
     <Canvas dpr={dpr} style={{ background: "grey" }} camera={{ position: [0, 2, 5] }}>
       <Stats />
-      <PerformanceMonitor
+      {/* <PerformanceMonitor
         iterations={3}
         onIncline={() => {
           setDpr(Math.min(dpr + 0.1, window.devicePixelRatio));
@@ -133,14 +133,14 @@ function ThreeScene() {
           setDpr(Math.max(dpr - 0.1, 0.5));
           console.log("Decline", dpr);
         }}
-      />
+      /> */}
       <OrbitControls target={[0, 1, 0]} />
 
       <directionalLight color="green" position={[0, 0, 5]} intensity={3} />
       <Box position={[-1.2, 0, 0]} />
       <Box position={[1.2, 0, 0]} />
 
-      <Suspense>
+      {/* <Suspense>
         <Environment
           files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/garden_nook_1k.hdr"
           ground={{
@@ -161,7 +161,7 @@ function ThreeScene() {
         />
 
         <Shoes range={range} />
-      </Suspense>
+      </Suspense> */}
     </Canvas>
   );
 }
