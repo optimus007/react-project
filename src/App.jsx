@@ -12,13 +12,20 @@ import {
   PerformanceMonitor,
   usePerformanceMonitor,
 } from "@react-three/drei";
-import { useControls } from "leva";
+import { useControls, folder } from "leva";
 import { Robot } from "./assets/Robot";
 import { TweakBox } from "./assets/TweakBox";
 import { Shoes } from "./assets/Shoes";
 
 export default function App() {
-  const [dpr, setDpr] = useState(0.5);
+  const [{ dpr }, setDpr] = useControls("Px Ratio", () => ({
+    dpr: {
+      value: 1,
+      min: 0.4,
+      max: 4,
+      step: 0.2,
+    },
+  }));
 
   return (
     <Canvas dpr={dpr} camera={{ position: [0, 10, 20], fov: 50 }}>
