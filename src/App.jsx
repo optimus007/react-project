@@ -21,30 +21,6 @@ function GuiStuff() {
     version: String(version),
   });
 }
-const params = {
-  range: 0,
-};
-
-function Box(props) {
-  const mesh = useRef();
-
-  const [hovered, setHover] = useState(false);
-  const [active, setActive] = useState(false);
-  useFrame((state, delta) => (mesh.current.rotation.x += 0.005));
-  return (
-    <mesh
-      {...props}
-      ref={mesh}
-      scale={active ? 1.5 : 1}
-      onClick={(event) => setActive(!active)}
-      onPointerOver={(event) => setHover(true)}
-      onPointerOut={(event) => setHover(false)}
-    >
-      <boxGeometry args={[0.1, 0.2, 0.1]} />
-      <meshStandardMaterial color={hovered ? "hotpink" : "orange"} metalness={hovered ? 0 : 1} roughness={0} />
-    </mesh>
-  );
-}
 
 const Model = () => {
   const gltf = useGLTF("./model.glb");
@@ -52,7 +28,7 @@ const Model = () => {
 
   useEffect(() => {
     console.log("play");
-    actions[names[0]]?.play();
+    actions[names[0]]?.reset().play();
   }, []);
 
   return (
@@ -102,7 +78,7 @@ function Shoe({ random, ...props }) {
 }
 
 function ThreeScene() {
-  const [dpr, setDpr] = useState(1);
+  const [dpr, setDpr] = useState(0.5);
 
   const conShadow = useControls("shadow", {
     opacity: 0.5,
@@ -115,9 +91,6 @@ function ThreeScene() {
     scale: 20,
   });
 
-  // const canvasProps = useControls("Canvas", {
-  //   dpr: dpr,
-  // });
   const { range } = useControls({ range: { value: 10, min: 0, max: 500, step: 10 } });
   return (
     <Canvas dpr={dpr} style={{ background: "grey" }} camera={{ position: [0, 2, 5] }}>
@@ -135,10 +108,6 @@ function ThreeScene() {
         }}
       />
       <OrbitControls target={[0, 1, 0]} />
-
-      <directionalLight color="green" position={[0, 0, 5]} intensity={3} />
-      <Box position={[-1.2, 0, 0]} />
-      <Box position={[1.2, 0, 0]} />
 
       <Suspense>
         <Environment
