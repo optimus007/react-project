@@ -57,5 +57,3 @@ export function Robot(props) {
     </group>
   );
 }
-
-useGLTF.preload("/model.glb");
