@@ -1,4 +1,4 @@
-import { useGLTF } from "@react-three/drei";
+import { Instance, Instances, useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useControls } from "leva";
 import { useRef, useState } from "react";
