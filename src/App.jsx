@@ -1,52 +1,34 @@
 import "./App.css";
+import * as THREE from "three";
+import { Suspense, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useRef, useState, Suspense, useEffect } from "react";
 import {
-  Environment,
-  OrbitControls,
-  PerformanceMonitor,
-  Stats,
-  useGLTF,
-  useAnimations,
-  ContactShadows,
   Instances,
   Instance,
+  OrbitControls,
+  Environment,
+  useGLTF,
+  Stats,
+  PerformanceMonitor,
+  usePerformanceMonitor,
 } from "@react-three/drei";
 import { useControls } from "leva";
-import { version } from "../package.json";
-import { Color, MathUtils } from "three";
+import { Robot } from "./assets/Robot";
+import { TweakBox } from "./assets/TweakBox";
 
-function GuiStuff() {
-  const ver = useControls({
-    version: String(version),
-  });
-}
-
-const Model = () => {
-  const gltf = useGLTF("./model.glb");
-  const { actions, names, mixer } = useAnimations(gltf.animations, gltf.scene);
-
-  useEffect(() => {
-    console.log("play");
-    actions[names[0]]?.reset().play();
-  }, []);
-
-  return (
-    <>
-      <primitive object={gltf.scene} scale={1} />
-    </>
-  );
-};
-
-const color = new Color();
+const color = new THREE.Color();
 const randomVector = (r) => [r / 2 - Math.random() * r, r / 2 - Math.random() * r + r / 2, r / 2 - Math.random() * r];
 const randomEuler = () => [Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI];
-const randomData = Array.from({ length: 1000 }, (r = 5) => ({ random: Math.random(), position: randomVector(r), rotation: randomEuler() }));
+const randomData = Array.from({ length: 1000 }, (r = 10) => ({
+  random: Math.random(),
+  position: randomVector(r),
+  rotation: randomEuler(),
+}));
 
-const Shoes = ({ range }) => {
-  const gltf = useGLTF("./shoe.glb");
-  const { nodes, materials } = gltf;
+function Shoes() {
+  const { range } = useControls({ range: { value: 100, min: 0, max: 1000, step: 10 } });
 
+  const { nodes, materials } = useGLTF("/shoe.glb");
   return (
     <Instances range={range} material={materials.phong1SG} geometry={nodes.Shoe.geometry}>
       {randomData.map((props, i) => (
@@ -54,47 +36,31 @@ const Shoes = ({ range }) => {
       ))}
     </Instances>
   );
-};
+}
 
 function Shoe({ random, ...props }) {
   const ref = useRef();
   const [hovered, setHover] = useState(false);
-
   useFrame((state) => {
     const t = state.clock.getElapsedTime() + random * 10000;
     ref.current.rotation.set(Math.cos(t / 4) / 2, Math.sin(t / 4) / 2, Math.cos(t / 1.5) / 2);
     ref.current.position.y = Math.sin(t / 1.5) / 2;
-    ref.current.scale.x = ref.current.scale.y = ref.current.scale.z = MathUtils.lerp(ref.current.scale.z, hovered ? 1 : 0.5, 0.1);
-    ref.current.color.lerp(color.set(hovered ? "red" : "white"), hovered ? 1 : 0.1);
   });
   return (
     <group {...props}>
-      <Instance
-        ref={ref}
-        // onPointerOver={(e) => (e.stopPropagation(), setHover(true))} onPointerOut={(e) => setHover(false)}
-      />
+      <Instance ref={ref} />
     </group>
   );
 }
 
-function ThreeScene() {
+export default function App() {
   const [dpr, setDpr] = useState(0.5);
 
-  const conShadow = useControls("shadow", {
-    opacity: 0.5,
-    blur: 0.5,
-  });
-
-  const groundProj = useControls("Ground", {
-    height: 5,
-    radius: 40,
-    scale: 20,
-  });
-
-  const { range } = useControls({ range: { value: 10, min: 0, max: 500, step: 10 } });
   return (
-    <Canvas dpr={dpr} style={{ background: "grey" }} camera={{ position: [0, 2, 5] }}>
-      <Stats />
+    <Canvas dpr={dpr} camera={{ position: [0, 10, 20], fov: 50 }}>
+      <ambientLight intensity={0.5} />
+      <directionalLight intensity={0.3} position={[5, 25, 20]} />
+
       <PerformanceMonitor
         iterations={3}
         onIncline={() => {
@@ -107,41 +73,13 @@ function ThreeScene() {
           console.log("Decline", dpr);
         }}
       />
-      <OrbitControls target={[0, 1, 0]} />
-
-      <Suspense>
-        <Environment
-          files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/garden_nook_1k.hdr"
-          ground={{
-            height: groundProj.height,
-            radius: groundProj.radius,
-            scale: groundProj.scale,
-          }}
-        />
-        <Model />
-        <ContactShadows
-          rotation={[Math.PI / 2, 0, 0]}
-          position={[0, 0, 0]}
-          opacity={conShadow.opacity}
-          scale={5}
-          blur={conShadow.blur}
-          far={10}
-          resolution={256}
-        />
-
-        <Shoes range={range} />
+      <TweakBox />
+      <Suspense fallback={null}>
+        <Shoes />
+        <Environment preset="city" />
+        <Robot scale={3} position={[0, 0, 4]} />
       </Suspense>
+      <OrbitControls target={[0, 5, 0]} />
     </Canvas>
   );
 }
-
-function App() {
-  GuiStuff();
-  return (
-    <>
-      <ThreeScene />
-    </>
-  );
-}
-
-export default App;
