@@ -1,18 +1,8 @@
 import "./App.css";
-import * as THREE from "three";
-import { Suspense, useRef, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import {
-  Instances,
-  Instance,
-  OrbitControls,
-  Environment,
-  useGLTF,
-  Stats,
-  PerformanceMonitor,
-  usePerformanceMonitor,
-} from "@react-three/drei";
-import { useControls, folder } from "leva";
+import { Suspense } from "react";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls, Environment, PerformanceMonitor } from "@react-three/drei";
+import { useControls } from "leva";
 import { Robot } from "./assets/Robot";
 import { TweakBox } from "./assets/TweakBox";
 import { Shoes } from "./assets/Shoes";
