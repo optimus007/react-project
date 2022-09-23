@@ -6,6 +6,7 @@ import { useControls } from "leva";
 import { Robot } from "./assets/Robot";
 import { TweakBox } from "./assets/TweakBox";
 import { Shoes } from "./assets/Shoes";
+import { BoxesSpread } from "./assets/BoxesSpread";
 
 export default function App() {
   const [{ dpr }, setDpr] = useControls("Px Ratio", () => ({
@@ -19,9 +20,6 @@ export default function App() {
 
   return (
     <Canvas dpr={dpr} camera={{ position: [0, 10, 20], fov: 50 }}>
-      <ambientLight intensity={0.5} />
-      <directionalLight intensity={0.3} position={[5, 25, 20]} />
-
       <PerformanceMonitor
         iterations={3}
         onIncline={() => {
@@ -34,6 +32,7 @@ export default function App() {
           console.log("Decline", dpr);
         }}
       />
+      <BoxesSpread />
       <TweakBox />
       <Suspense fallback={null}>
         <Shoes />
