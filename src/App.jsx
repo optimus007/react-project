@@ -13,13 +13,19 @@ export default function App() {
     dpr: {
       value: 1,
       min: 0.4,
-      max: 4,
+      max: window.devicePixelRatio,
       step: 0.2,
     },
   }));
 
+  const groundProj = useControls("Ground", {
+    height: 5,
+    radius: 40,
+    scale: 20,
+  });
+
   return (
-    <Canvas dpr={dpr} camera={{ position: [0, 10, 20], fov: 50 }}>
+    <Canvas dpr={dpr} camera={{ position: [0, 2, 5], fov: 80 }}>
       <PerformanceMonitor
         iterations={3}
         onIncline={() => {
@@ -36,10 +42,17 @@ export default function App() {
       <TweakBox />
       <Suspense fallback={null}>
         <Shoes />
-        <Environment preset="city" />
-        <Robot scale={3} position={[0, 0, 4]} />
+        <Environment
+          files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/garden_nook_1k.hdr"
+          ground={{
+            height: groundProj.height,
+            radius: groundProj.radius,
+            scale: groundProj.scale,
+          }}
+        />
+        <Robot />
       </Suspense>
-      <OrbitControls target={[0, 5, 0]} />
+      <OrbitControls target={[0, 1, 0]} />
     </Canvas>
   );
 }

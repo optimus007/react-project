@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@react-three/drei": "^9.32.0",
-    "@react-three/fiber": "^8.8.1",
+    "@react-three/fiber": "^8.8.2",
     "leva": "^0.9.31",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
@@ -18,10 +18,10 @@
     "three": "^0.144.0"
   },
   "devDependencies": {
-    "@types/react": "^18.0.17",
+    "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
     "@vitejs/plugin-react": "^2.1.0",
-    "vite": "^3.1.0"
+    "vite": "^3.1.3"
   },
   "prettier": {
     "printWidth": 140
