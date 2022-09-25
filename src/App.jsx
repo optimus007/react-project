@@ -7,6 +7,8 @@ import { Robot } from "./assets/Robot";
 import { TweakBox } from "./assets/TweakBox";
 import { Shoes } from "./assets/Shoes";
 import { BoxesSpread } from "./assets/BoxesSpread";
+import { Lanterns } from "./assets/Lantern";
+import Grass from "./assets/Grass";
 
 export default function App() {
   const [{ dpr }, setDpr] = useControls("Px Ratio", () => ({
@@ -38,20 +40,23 @@ export default function App() {
           console.log("Decline", dpr);
         }}
       />
-      <BoxesSpread />
-      <TweakBox />
+      {/* <BoxesSpread /> */}
+      {/* <TweakBox /> */}
       <Suspense fallback={null}>
-        <Shoes />
+        {/* <Shoes /> */}
         <Environment
-          files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/garden_nook_1k.hdr"
+          files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/clarens_midday_1k.hdr"
           ground={{
             height: groundProj.height,
             radius: groundProj.radius,
             scale: groundProj.scale,
           }}
         />
-        <Robot />
+        {/* <Robot /> */}
+        <Lanterns />
+        {/* <Grass /> */}
       </Suspense>
+      <gridHelper />
       <OrbitControls target={[0, 1, 0]} />
     </Canvas>
   );
