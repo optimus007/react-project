@@ -12,20 +12,28 @@ import Grass from "./assets/Grass"
 import { Water } from "./assets/Water"
 
 export default function App() {
-  const [{ dpr }, setDpr] = useControls("Px Ratio", () => ({
-    dpr: {
-      value: 1,
-      min: 0.4,
-      max: window.devicePixelRatio,
-      step: 0.2,
-    },
-  }))
+  const [{ dpr }, setDpr] = useControls(
+    "Px Ratio",
+    () => ({
+      dpr: {
+        value: 1,
+        min: 0.4,
+        max: window.devicePixelRatio,
+        step: 0.2,
+      },
+    }),
+    { collapsed: true }
+  )
 
-  const groundProj = useControls("Ground", {
-    height: 15,
-    radius: 50,
-    scale: 800,
-  })
+  const groundProj = useControls(
+    "Ground",
+    {
+      height: 15,
+      radius: 50,
+      scale: 800,
+    },
+    { collapsed: true }
+  )
 
   return (
     <Canvas dpr={dpr} camera={{ position: [0, 2, 5], fov: 80 }}>

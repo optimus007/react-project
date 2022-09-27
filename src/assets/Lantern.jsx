@@ -58,9 +58,13 @@ function Lantern() {
 }
 
 export function Lanterns() {
-  const { range } = useControls("Lanterns", {
-    range: { value: 100, min: 0, max: particles.length, step: 1 },
-  })
+  const { range } = useControls(
+    "Lanterns",
+    {
+      range: { value: 100, min: 0, max: particles.length, step: 1 },
+    },
+    { collapsed: true }
+  )
 
   const lan = useRef()
   const { scene, materials, nodes } = useGLTF("./sky_lantern.glb")

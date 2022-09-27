@@ -86,7 +86,8 @@ export function Water() {
         max: 3,
         step: 0.01,
       },
-    })
+    }),
+    { collapsed: true }
   )
 
   useEffect(() => {
@@ -96,7 +97,7 @@ export function Water() {
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime()
-    texture.offset.set(t * 0.01, Math.sin(t * 0.01))
+    texture.offset.set(t * 0.03, Math.sin(t * 0.01))
   })
 
   return (
