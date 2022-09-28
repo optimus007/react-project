@@ -1,36 +1,36 @@
 import { MeshReflectorMaterial, useTexture } from "@react-three/drei"
 import { useFrame } from "@react-three/fiber"
 import { folder, useControls } from "leva"
-import { useEffect } from "react"
-import { RepeatWrapping } from "three"
+import { useEffect, useState } from "react"
+import { RepeatWrapping, RGBAFormat } from "three"
 
 export function Water() {
   const texture = useTexture("./water_norm.jpg", (texture) => {
     texture.wrapS = texture.wrapT = RepeatWrapping
+    texture.format = RGBAFormat
   })
 
-  const [{ color, res, blurX, blurY, rou, met, mixStrength, mixBlur, minDepthThreshold, depthScale, repeat, distortion }] = useControls(
+  const textureCol = useTexture("./water_col.jpg", (texture) => {
+    texture.wrapS = texture.wrapT = RepeatWrapping
+    texture.format = RGBAFormat
+  })
+
+  const [{ color, blurX, blurY, rou, met, mixStrength, mixBlur, minDepthThreshold, depthScale, repeat, distortion }] = useControls(
     "Water",
     () => ({
       material: folder({
-        color: "#111414",
+        color: "#141313",
         rou: {
-          value: 1,
+          value: 0.4,
           min: 0,
           max: 1,
         },
         met: {
-          value: 0.5,
+          value: 1,
           min: 0,
           max: 1,
         },
       }),
-      res: {
-        value: 1024,
-        min: 256,
-        max: 2048,
-        step: 128,
-      },
 
       blurX: {
         value: 400,
@@ -46,7 +46,7 @@ export function Water() {
       },
 
       mixStrength: {
-        value: 15,
+        value: 30,
         min: 0,
         max: 30,
         step: 0.1,
@@ -74,9 +74,9 @@ export function Water() {
       },
 
       repeat: {
-        value: 30,
+        value: 60,
         min: 1,
-        max: 30,
+        max: 120,
         step: 1,
       },
 
@@ -90,14 +90,17 @@ export function Water() {
     { collapsed: true }
   )
 
+  const [normalScale, setNormalScale] = useState(1)
+
   useEffect(() => {
+    textureCol.repeat.set(repeat, repeat)
     texture.repeat.set(repeat, repeat)
-    texture.needsUpdate = true
   }, [repeat])
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime()
     texture.offset.set(t * 0.03, Math.sin(t * 0.01))
+    textureCol.offset.set(t * 0.03, Math.sin(t * 0.01))
   })
 
   return (
@@ -105,15 +108,17 @@ export function Water() {
       <circleGeometry args={[25, 64]} />
       <MeshReflectorMaterial
         blur={[blurX, blurY]}
-        resolution={res}
+        resolution={1024}
         mixBlur={mixBlur}
         mixStrength={mixStrength}
         depthScale={depthScale}
         minDepthThreshold={minDepthThreshold}
         color={color}
+        map={textureCol}
         metalness={met}
         roughness={rou}
         normalMap={texture}
+        normalScale={[normalScale, normalScale]}
         distortion={distortion}
         distortionMap={texture}
       />
