@@ -64,19 +64,12 @@ export default function App() {
       <Water />
       <Suspense fallback={null}>
         {/* <Shoes /> */}
-        <Environment
-          files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/clarens_midday_2k.hdr"
-          ground={{
-            height: groundProj.height,
-            radius: groundProj.radius,
-            scale: groundProj.scale,
-          }}
-        />
+        <Environment files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/clarens_midday_2k.hdr" background />
         {/* <Robot /> */}
         <Lanterns />
       </Suspense>
       <gridHelper />
-      <OrbitControls makeDefault autoRotate autoRotateSpeed={0.5} />
+      <OrbitControls makeDefault />
       <CameraShake
         maxYaw={0.1} // Max amount camera can yaw in either direction
         maxPitch={0.1} // Max amount camera can pitch in either direction
